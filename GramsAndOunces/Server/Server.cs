@@ -41,30 +41,44 @@ namespace Server
             using (var streamReader = new StreamReader(socket.GetStream()))
             using (var streamWriter = new StreamWriter(socket.GetStream()))
             {
+                
                 // Read stream, split it, put in array
                 var clientRequestString = streamReader.ReadLine();
                 var clientRequestArray = clientRequestString.Split(' ');
 
-                // Define index of method and value
-                var requestedMethod = clientRequestArray[0];
-                var valueToConvert = Convert.ToDouble(clientRequestArray[1]);
+                // Checking for valid syntax
+                if (!clientRequestString.ToLower().Contains("togram") ||
+                    !clientRequestString.ToLower().Contains("toounces"))
+                {
+                    streamWriter.WriteLine("Command not recognized");
+                }
+                else
+                {
+                    // Define index of method and value
+                    var requestedMethod = clientRequestArray[0];
+                    var valueToConvert = Convert.ToDouble(clientRequestArray[1]);
 
-                // Convert to desired type
-                var resultOfConversion = "";
-                if (requestedMethod.ToLower() == "togram")
-                {
-                    resultOfConversion = $"{GramsOuncesConversion.OuncesToGrams(valueToConvert)} grams";
+                    // Convert to desired type
+                    var resultOfConversion = "";
+                    if (requestedMethod.ToLower() == "togram")
+                    {
+                        resultOfConversion = $"{GramsOuncesConversion.OuncesToGrams(valueToConvert)} grams";
+                    }
+                    if (requestedMethod.ToLower() == "toounces")
+                    {
+                        resultOfConversion = $"{GramsOuncesConversion.GramsToOunces(valueToConvert)} ounces";
+                    }
+
+                    // Place result in outbound stream
+                    streamWriter.WriteLine(resultOfConversion);
                 }
-                else if (requestedMethod.ToLower() == "toounces")
-                {
-                    resultOfConversion = $"{GramsOuncesConversion.GramsToOunces(valueToConvert)} ounces";
-                }
-                
-                // Place result in outbound stream
-                streamWriter.WriteLine(resultOfConversion);
+
                 // Flush result to allow for next
+                streamWriter.AutoFlush = true;
 
             }
+            // If socket is not null, close it
+            socket?.Close();
         }
 
     }

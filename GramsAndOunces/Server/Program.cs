@@ -7,7 +7,8 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            const int PORT = 7;
+            // Port number should be higher than 2048 as these are reserved for other protocols, but below 65535 which is the upper limit
+            const int PORT = 2049;
             Console.WriteLine("Server Window");
             var server = new Server(PORT);
             server.Start();
