@@ -10,7 +10,7 @@ namespace Client
     {
         public void Start()
         {
-            // Port number should be higher than 2048 as these are reserved for other protocols, but below 65535 which is the upper limit
+            // Port number of the server - clients own port number is assigned by the OS
             using (var socket = new TcpClient("localhost", 2049))
             using (var networkStream = socket.GetStream())
             using (var streamReader = new StreamReader(networkStream))

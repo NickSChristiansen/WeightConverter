@@ -15,18 +15,23 @@ namespace Server
 
         public Server(int port)
         {
-            this._port = port;
+            _port = port;
         }
 
         public void Start()
         {
-            var serverListner = new TcpListener(IPAddress.Loopback, _port);
+            // Set up to be a Server to listen on a specific port
+            // and start the server -- A port can only be used once at each computer
+            var serverListner = new TcpListener(IPAddress.Any, _port);
             serverListner.Start();
 
+            // To ensure the server can handle more than one client
             while (true)
             {
+                // wait for the next client -- if no client connects the server wait here forever
                 var socket = serverListner.AcceptTcpClient();
                 {
+                    // Handle One client in a seperate thread - i.e. to serve mulitple clients simultaneously
                     var tempSocket = socket;
                     Task.Run(() =>
                     {
@@ -38,6 +43,7 @@ namespace Server
 
         public void ServeClient(TcpClient socket)
         {
+            // "using" automatically frees resources when they're no longer in use. If "using" is not used, they have to be closed manually
             using (var streamReader = new StreamReader(socket.GetStream()))
             using (var streamWriter = new StreamWriter(socket.GetStream()))
             {
@@ -77,7 +83,7 @@ namespace Server
                 streamWriter.AutoFlush = true;
 
             }
-            // If socket is not null, close it
+            // If socket is not null (ie. socket is in use), close it
             socket?.Close();
         }
 
